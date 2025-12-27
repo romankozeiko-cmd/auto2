@@ -1,37 +1,34 @@
 -- Настройки
-local SLOT_NUMBER = 2 -- Номер слота (предмет под цифрой 2)
+local ITEM_NAME = "Combat" -- Название предмета
 
 local player = game:GetService("Players").LocalPlayer
 
-local function equipItem()
-    -- Ждем появления персонажа и его гуманоида (важно для мобильных устройств)
+local function equipCombat()
+    -- Ожидание персонажа и его гуманоида (нужно для всех устройств)
     local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid", 10)
-    local backpack = player:WaitForChild("Backpack", 10)
+    local humanoid = character:WaitForChild("Humanoid", 15)
+    local backpack = player:WaitForChild("Backpack", 15)
     
     if not humanoid or not backpack then return end
 
-    -- На телефонах задержка должна быть чуть больше для стабильности
+    -- Пауза 1 секунда: на ПК это гарантирует прогрузку инвентаря, 
+    -- на телефоне — стабильность при низком FPS
     task.wait(1)
     
-    -- Получаем список всех предметов в рюкзаке
-    local items = backpack:GetChildren()
+    -- Пытаемся найти предмет в рюкзаке
+    local item = backpack:FindFirstChild(ITEM_NAME)
     
-    -- Проверяем, есть ли предмет в нужном слоте
-    if items[SLOT_NUMBER] then
-        local item = items[SLOT_NUMBER]
-        -- Экипируем предмет
+    -- Если предмет найден и он не в руках — экипируем
+    if item and item:IsA("Tool") then
         humanoid:EquipTool(item)
-        print("Предмет '" .. item.Name .. "' экипирован.")
-    else
-        warn("Предмет в слоте " .. SLOT_NUMBER .. " не найден.")
+        print("Combat экипирован")
     end
 end
 
--- Запуск
-task.spawn(equipItem)
+-- Запуск при старте
+task.spawn(equipCombat)
 
--- Подписка на событие возрождения
+-- Авто-экипировка после каждого возрождения (работает и на ПК, и на мобилках)
 player.CharacterAdded:Connect(function()
-    equipItem()
+    equipCombat()
 end)
