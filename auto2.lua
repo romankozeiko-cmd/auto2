@@ -1,5 +1,5 @@
 -- Настройки
-local ITEM_NAME = "Combat" 
+local ITEM_NAME = "weight" 
 
 local player = game:GetService("Players").LocalPlayer
 
